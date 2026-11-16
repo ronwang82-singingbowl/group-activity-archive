@@ -22,7 +22,10 @@ export async function loadPublishedEvents() {
   return snap.docs.map(doc => {
     const data = doc.data();
     const rawDate = typeof data.date === 'string' ? data.date : (data.date?.toDate?.()?.toISOString?.().slice(0, 10) || '');
-    const date = rawDate.replaceAll('-', '.');
+    const startDate = rawDate.replaceAll('-', '.');
+    const rawEndDate = typeof data.endDate === 'string' ? data.endDate : (data.endDate?.toDate?.()?.toISOString?.().slice(0, 10) || '');
+    const endDate = rawEndDate.replaceAll('-', '.');
+    const date = endDate && endDate !== startDate ? `${startDate} – ${endDate}` : startDate;
     return {
       id: doc.id,
       title: String(data.title || '未命名活動'),
