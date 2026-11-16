@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { loadPublishedEvents } from './archiveData';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
@@ -12,7 +13,7 @@ const photos = {
 };
 
 // All names, dates and event descriptions below are fictional demo content.
-const events = [
+const demoEvents = [
   { id: 1, date: '2026.10.24', year: '2026', tag: '戶外日常', title: '在秋天，遇見慢下來的自己', summary: '走進山裡，讓風景替我們留下一段安靜的時間。', image: photos.forest, count: '24 張照片' },
   { id: 2, date: '2026.08.16', year: '2026', tag: '相聚時光', title: '午後的咖啡，剛好的我們', summary: '聊聊生活、交換近況，平凡的一天也值得好好記得。', image: photos.picnic, count: '18 張照片' },
   { id: 3, date: '2026.06.07', year: '2026', tag: '旅行紀事', title: '沿著海岸，把夏天收藏', summary: '海風、笑聲和路上的小小意外，組成獨一無二的記憶。', image: photos.coast, count: '36 張照片' }
@@ -24,12 +25,40 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [year, setYear] = useState('全部');
-  const filtered = year === '全部' ? events : events.filter(event => event.year === year);
+  const [category, setCategory] = useState('全部');
+  const [search, setSearch] = useState('');
+  const [events, setEvents] = useState(demoEvents);
+  const [isDemo, setIsDemo] = useState(true);
+  const [dataNotice, setDataNotice] = useState('');
+  useEffect(() => {
+    let mounted = true;
+    loadPublishedEvents().then(items => {
+      if (!mounted) return;
+      if (items.length) {
+        setEvents(items);
+        setIsDemo(false);
+        setDataNotice('');
+      } else {
+        setDataNotice('目前沒有公開發布的正式活動，以下繼續展示示範內容');
+      }
+    }).catch(() => {
+      if (mounted) setDataNotice('正式活動尚未開放讀取，以下繼續展示示範內容');
+    });
+    return () => { mounted = false; };
+  }, []);
+  const years = ['全部', ...new Set(events.map(e => e.year).filter(Boolean))].sort((a,b) => a === '全部' ? -1 : b === '全部' ? 1 : b.localeCompare(a));
+  const categories = ['全部', ...new Set(events.map(e => e.tag).filter(Boolean))];
+  const normalizedSearch = search.trim().toLocaleLowerCase();
+  const filtered = events.filter(event =>
+    (year === '全部' || event.year === year) &&
+    (category === '全部' || event.tag === category) &&
+    (!normalizedSearch || [event.title, event.summary, event.tag, event.date].join(' ').toLocaleLowerCase().includes(normalizedSearch))
+  );
 
   const go = (id) => { setMenuOpen(false); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
   return (
     <>
-      <div className="demo-banner">展示版本｜目前活動、日期與照片皆為示範內容，尚未連接 Firebase</div>
+      <div className="demo-banner">{isDemo ? '展示版本｜目前活動、日期與照片皆為示範內容' : '公開活動｜僅顯示已發布內容'}</div>
       <header className="site-header">
         <button className="brand" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); setMenuOpen(false); }} aria-label="回到首頁">
           <span className="brand-mark">日</span><span className="brand-text"><strong>日子有光</strong><small>MEMORY ARCHIVE</small></span>
@@ -68,18 +97,26 @@ function App() {
         <section className="memories" id="memories">
           <div className="section-wrap">
             <div className="section-heading"><div><p className="eyebrow">02 — OUR JOURNAL</p><h2>最近的<span className="italic-heading">相聚故事</span></h2><p className="heading-sub">每一次相見，都是值得收藏的篇章。</p></div>
-              <div className="years" role="group" aria-label="年份篩選">{['全部','2026'].map(y => <button key={y} className={year === y ? 'active' : ''} onClick={() => setYear(y)}>{y === '全部' ? '所有年份' : y}</button>)}</div>
+              <div className="years" role="group" aria-label="年份篩選">{years.map(y => <button key={y} className={year === y ? 'active' : ''} onClick={() => setYear(y)}>{y === '全部' ? '所有年份' : y}</button>)}</div>
             </div>
+            <div className="event-controls">
+              <label className="search-field"><span>搜尋活動</span><input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="輸入活動名稱、日期或關鍵字…" /></label>
+              <label className="category-field"><span>活動分類</span><select value={category} onChange={e => setCategory(e.target.value)}>{categories.map(t => <option key={t} value={t}>{t === '全部' ? '所有分類' : t}</option>)}</select></label>
+              {(search || category !== '全部' || year !== '全部') && <button className="clear-filters" onClick={() => {setSearch('');setCategory('全部');setYear('全部');}}>清除篩選</button>}
+            </div>
+            {dataNotice && <p className="data-notice" role="status">{dataNotice}</p>}
+            <div className="result-summary" aria-live="polite">找到 {filtered.length} 場活動</div>
             <div className="event-grid">{filtered.map((event, i) => <article className="event-card" key={event.id}>
               <button className="event-photo" onClick={() => setSelectedEvent(event)} aria-label={`查看${event.title}`}>
-                <img loading="lazy" src={event.image} alt={event.title + '示範配圖'} /><span className="photo-number">0{i+1}</span><span className="photo-more"><Arrow diagonal /></span>
+                <img loading="lazy" src={event.image} alt={event.title + (isDemo ? '示範配圖' : '活動封面')} /><span className="photo-number">0{i+1}</span><span className="photo-more"><Arrow diagonal /></span>
               </button>
               <div className="event-meta"><span>{event.date}</span><span className="meta-dot">•</span><span>{event.tag}</span></div>
               <button className="event-title" onClick={() => setSelectedEvent(event)}>{event.title}</button>
               <p className="event-summary">{event.summary}</p>
-              <div className="event-footer"><span>{event.count} · 示範內容</span><button onClick={() => setSelectedEvent(event)}>閱讀故事 <Arrow /></button></div>
+              <div className="event-footer"><span>{event.count}{isDemo ? ' · 示範內容' : ''}</span><button onClick={() => setSelectedEvent(event)}>閱讀故事 <Arrow /></button></div>
             </article>)}</div>
-            <div className="center-footnote">— 更多真實活動，將在正式上線後陸續收藏 —</div>
+            {filtered.length === 0 && <div className="no-events"><h3>還沒找到符合條件的活動</h3><p>可以試著調整關鍵字或清除篩選條件。</p><button onClick={() => {setSearch('');setCategory('全部');setYear('全部');}}>顯示所有活動</button></div>}
+            <div className="center-footnote">{isDemo ? '— 更多真實活動，將在正式上線後陸續收藏 —' : '— 謝謝你和我們一起收藏這些片刻 —'}</div>
           </div>
         </section>
 
@@ -96,7 +133,11 @@ function App() {
       <footer><div className="footer-brand"><span className="brand-mark">日</span><div><strong>日子有光</strong><small>把每一段相聚，收藏成光。</small></div></div><div className="footer-right"><span>© 2026 MEMORY ARCHIVE</span><span>一個關於我們的故事收藏所</span></div></footer>
 
       {selectedEvent && <div className="modal-backdrop" onClick={() => setSelectedEvent(null)}><section className="event-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="關閉">✕</button><img src={selectedEvent.image} alt={selectedEvent.title + '示意圖片'} /><div className="modal-content"><p className="eyebrow">{selectedEvent.date} · {selectedEvent.tag}</p><h2 id="modal-title">{selectedEvent.title}</h2><p>{selectedEvent.summary}</p><div className="modal-note">這是首頁互動示範。真實活動詳情、相簿、心得與影片將在下一階段加入。</div><button onClick={() => setSelectedEvent(null)}>回到首頁 <Arrow /></button></div>
+        <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="關閉">✕</button><img src={selectedEvent.image} alt={selectedEvent.title + (isDemo ? '示意圖片' : '活動封面')} /><div className="modal-content"><p className="eyebrow">{selectedEvent.date} · {selectedEvent.tag}</p><h2 id="modal-title">{selectedEvent.title}</h2><p>{selectedEvent.story || selectedEvent.summary}</p>
+          {selectedEvent.location && <p className="event-location">地點｜{selectedEvent.location}</p>}
+          {selectedEvent.photos?.length > 0 && <div className="modal-gallery">{selectedEvent.photos.map((url,i) => <img key={i} loading="lazy" src={url} alt={selectedEvent.title + '照片 ' + (i+1)} />)}</div>}
+          {selectedEvent.videoUrl && /^https:\/\//.test(selectedEvent.videoUrl) && <p><a href={selectedEvent.videoUrl} target="_blank" rel="noopener noreferrer">觀看活動影片 ↗</a></p>}
+          {isDemo && <div className="modal-note">這是示範活動。正式活動的照片、故事與影片，將由管理員審核發布後顯示。</div>}<button onClick={() => setSelectedEvent(null)}>回到首頁 <Arrow /></button></div>
       </section></div>}
     </>
   );
