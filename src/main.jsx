@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { loadPublishedEvents } from './archiveData';
 import { createRoot } from 'react-dom/client';
+import defaultEventCover from './assets/default-event-cover.svg';
 import './styles.css';
 
 const photos = {
@@ -108,7 +109,7 @@ function App() {
             <div className="result-summary" aria-live="polite">找到 {filtered.length} 場活動</div>
             <div className="event-grid">{filtered.map((event, i) => <article className="event-card" key={event.id}>
               <button className="event-photo" onClick={() => setSelectedEvent(event)} aria-label={`查看${event.title}`}>
-                <img loading="lazy" src={event.image} alt={event.title + (isDemo ? '示範配圖' : '活動封面')} /><span className="photo-number">0{i+1}</span><span className="photo-more"><Arrow diagonal /></span>
+                <img loading="lazy" src={event.image?.trim() || defaultEventCover} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = defaultEventCover; }} alt={event.title + (isDemo ? '示範配圖' : '活動封面')} /><span className="photo-number">0{i+1}</span><span className="photo-more"><Arrow diagonal /></span>
               </button>
               <div className="event-meta"><span>{event.date}</span><span className="meta-dot">•</span><span>{event.tag}</span></div>
               <button className="event-title" onClick={() => setSelectedEvent(event)}>{event.title}</button>
@@ -133,7 +134,7 @@ function App() {
       <footer><div className="footer-brand"><span className="brand-mark">日</span><div><strong>日子有光</strong><small>把每一段相聚，收藏成光。</small></div></div><div className="footer-right"><span>© 2026 MEMORY ARCHIVE</span><span>一個關於我們的故事收藏所</span></div></footer>
 
       {selectedEvent && <div className="modal-backdrop" onClick={() => setSelectedEvent(null)}><section className="event-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="關閉">✕</button><img src={selectedEvent.image} alt={selectedEvent.title + (isDemo ? '示意圖片' : '活動封面')} /><div className="modal-content"><p className="eyebrow">{selectedEvent.date} · {selectedEvent.tag}</p><h2 id="modal-title">{selectedEvent.title}</h2><p>{selectedEvent.story || selectedEvent.summary}</p>
+        <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="關閉">✕</button><img src={selectedEvent.image?.trim() || defaultEventCover} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = defaultEventCover; }} alt={selectedEvent.title + (isDemo ? '示意圖片' : '活動封面')} /><div className="modal-content"><p className="eyebrow">{selectedEvent.date} · {selectedEvent.tag}</p><h2 id="modal-title">{selectedEvent.title}</h2><p>{selectedEvent.story || selectedEvent.summary}</p>
           {selectedEvent.location && <p className="event-location">地點｜{selectedEvent.location}</p>}
           {selectedEvent.photos?.length > 0 && <div className="modal-gallery">{selectedEvent.photos.map((url,i) => <img key={i} loading="lazy" src={url} alt={selectedEvent.title + '照片 ' + (i+1)} />)}</div>}
           {selectedEvent.videoUrl && /^https:\/\//.test(selectedEvent.videoUrl) && <p><a href={selectedEvent.videoUrl} target="_blank" rel="noopener noreferrer">觀看活動影片 ↗</a></p>}
