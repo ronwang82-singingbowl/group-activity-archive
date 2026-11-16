@@ -18,3 +18,6 @@
 .modal-content a{color:#526c57;text-underline-offset:4px}
 .event-location{font-size:12px!important;color:#879588!important}
 @media(max-width:560px){.event-controls{align-items:stretch;gap:13px}.search-field,.category-field{min-width:100%;width:100%}.clear-filters{width:100%}.modal-gallery img{height:115px}}
+
+/* Keep group photos fully visible in cards and event details. */
+.event-photo img,.event-modal>img{object-fit:contain;background:#e8ece3}
