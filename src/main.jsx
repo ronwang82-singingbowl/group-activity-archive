@@ -137,7 +137,7 @@ function App() {
         <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="關閉">✕</button><img src={selectedEvent.image?.trim() || defaultEventCover} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = defaultEventCover; }} alt={selectedEvent.title + (isDemo ? '示意圖片' : '活動封面')} /><div className="modal-content"><p className="eyebrow">{selectedEvent.date} · {selectedEvent.tag}</p><h2 id="modal-title">{selectedEvent.title}</h2><p>{selectedEvent.story || selectedEvent.summary}</p>
           {selectedEvent.location && <p className="event-location">地點｜{selectedEvent.location}</p>}
           {selectedEvent.photos?.length > 0 && <div className="modal-gallery">{selectedEvent.photos.map((url,i) => <img key={i} loading="lazy" src={url} alt={selectedEvent.title + '照片 ' + (i+1)} />)}</div>}
-          {selectedEvent.videoUrl && /^https:\/\//.test(selectedEvent.videoUrl) && <p><a href={selectedEvent.videoUrl} target="_blank" rel="noopener noreferrer">觀看活動影片 ↗</a></p>}
+          {selectedEvent.videoUrl && /^https:\/\//.test(selectedEvent.videoUrl) && (/\.mp4(?:[?#]|$)/i.test(selectedEvent.videoUrl) ? <div className="event-video"><h3>活動影片</h3><video controls playsInline preload="metadata" src={selectedEvent.videoUrl}>你的瀏覽器無法播放這段影片，請使用下方連結。</video><a href={selectedEvent.videoUrl} target="_blank" rel="noopener noreferrer">開啟影片 ↗</a></div> : <p><a href={selectedEvent.videoUrl} target="_blank" rel="noopener noreferrer">觀看活動影片 ↗</a></p>)}
           {isDemo && <div className="modal-note">這是示範活動。正式活動的照片、故事與影片，將由管理員審核發布後顯示。</div>}<button onClick={() => setSelectedEvent(null)}>回到首頁 <Arrow /></button></div>
       </section></div>}
     </>
