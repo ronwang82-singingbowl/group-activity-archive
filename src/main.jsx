@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { loadPublishedEvents } from './archiveData';
 import { createRoot } from 'react-dom/client';
 import defaultEventCover from './assets/default-event-cover.svg';
+import originalBrandMark from './assets/complete-life-original-mark.png';
 import './styles.css';
 
 const photos = {
@@ -23,7 +24,7 @@ const demoEvents = [
 function Arrow({ diagonal = false }) { return <span aria-hidden="true" className="arrow">{diagonal ? '↗' : '→'}</span>; }
 
 function BrandMark() {
-  return <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="18.5" stroke="currentColor" strokeWidth="1.6"/><circle cx="24" cy="11.5" r="2.4" fill="#f5d28a"/><path d="M24 7.1v1.1M19.6 11.5h1.1M27.3 11.5h1.1M20.9 8.4l.8.8M27.1 8.4l-.8.8" stroke="#f5d28a" strokeWidth="1.6" strokeLinecap="round"/><circle cx="24" cy="19" r="2.8" fill="currentColor"/><circle cx="15.4" cy="22" r="2.4" fill="currentColor"/><circle cx="32.6" cy="22" r="2.4" fill="currentColor"/><path d="M17.2 33c.6-4 3.2-6.6 6.8-6.6s6.2 2.6 6.8 6.6M10.9 32c.4-3.2 2.1-5.1 4.9-5.1 1.1 0 2 .3 2.8.9M37.1 32c-.4-3.2-2.1-5.1-4.9-5.1-1.1 0-2 .3-2.8.9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg></span>;
+  return <span className="brand-mark" aria-hidden="true"><img src={originalBrandMark} alt="" /><svg className="brand-light" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="5" fill="#e4b961"/><path d="M16 2v5M16 25v5M2 16h5M25 16h5M6.2 6.2l3.5 3.5M22.3 22.3l3.5 3.5M25.8 6.2l-3.5 3.5M9.7 22.3l-3.5 3.5" stroke="#d8a74e" strokeWidth="2.3" strokeLinecap="round"/></svg></span>;
 }
 
 function youtubeEmbedUrl(value) {
