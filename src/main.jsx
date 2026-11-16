@@ -22,6 +22,10 @@ const demoEvents = [
 
 function Arrow({ diagonal = false }) { return <span aria-hidden="true" className="arrow">{diagonal ? '↗' : '→'}</span>; }
 
+function BrandMark() {
+  return <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="18.5" stroke="currentColor" strokeWidth="1.6"/><circle cx="24" cy="11.5" r="2.4" fill="#f5d28a"/><path d="M24 7.1v1.1M19.6 11.5h1.1M27.3 11.5h1.1M20.9 8.4l.8.8M27.1 8.4l-.8.8" stroke="#f5d28a" strokeWidth="1.6" strokeLinecap="round"/><circle cx="24" cy="19" r="2.8" fill="currentColor"/><circle cx="15.4" cy="22" r="2.4" fill="currentColor"/><circle cx="32.6" cy="22" r="2.4" fill="currentColor"/><path d="M17.2 33c.6-4 3.2-6.6 6.8-6.6s6.2 2.6 6.8 6.6M10.9 32c.4-3.2 2.1-5.1 4.9-5.1 1.1 0 2 .3 2.8.9M37.1 32c-.4-3.2-2.1-5.1-4.9-5.1-1.1 0-2 .3-2.8.9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg></span>;
+}
+
 function youtubeEmbedUrl(value) {
   try {
     const url = new URL(value);
@@ -87,7 +91,7 @@ function App() {
       <div className="demo-banner">{isDemo ? '展示版本｜目前活動、日期與照片皆為示範內容' : '公開活動｜僅顯示已發布內容'}</div>
       <header className="site-header">
         <button className="brand" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); setMenuOpen(false); }} aria-label="回到首頁">
-          <span className="brand-mark">圓</span><span className="brand-text"><strong>圓滿</strong><small>MEMORY ARCHIVE</small></span>
+          <BrandMark /><span className="brand-text"><strong>圓滿</strong><small>COMPLETE LIFE</small></span>
         </button>
         <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="主選單">
           <button onClick={() => go('story')}>關於這裡</button><button onClick={() => go('memories')}>活動紀錄</button><button onClick={() => go('gallery')}>回憶片刻</button><button onClick={() => go('closing')}>一起收藏</button>
@@ -156,7 +160,7 @@ function App() {
 
         <section className="closing" id="closing"><div className="closing-ornament">✳</div><p className="eyebrow">TO BE CONTINUED</p><h2>故事還在繼續<br />下次也一起吧</h2><p>每一個今天，都可能是未來最想念的那一天</p><button onClick={() => go('memories')}>再翻翻我們的故事 <Arrow diagonal /></button><div className="closing-small">WITH LOVE, FROM ALL OF US</div></section>
       </main>
-      <footer><div className="footer-brand"><span className="brand-mark">圓</span><div><strong>圓滿</strong><small>把每一段相聚，收藏成光</small></div></div><div className="footer-right"><span>© 2026 MEMORY ARCHIVE</span><span>一個關於我們的故事收藏所</span></div></footer>
+      <footer><div className="footer-brand"><BrandMark /><div><strong>圓滿</strong><small>把每一段相聚，收藏成光</small></div></div><div className="footer-right"><span>© 2026 COMPLETE LIFE</span><span>一個關於我們的故事收藏所</span></div></footer>
 
       {selectedEvent && <div className="modal-backdrop" onClick={() => setSelectedEvent(null)}><section className="event-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="關閉">✕</button><img src={selectedEvent.image?.trim() || defaultEventCover} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = defaultEventCover; }} alt={selectedEvent.title + (isDemo ? '示意圖片' : '活動封面')} /><div className="modal-content"><p className="eyebrow">{selectedEvent.date} · {selectedEvent.tag}</p><h2 id="modal-title">{withoutEndingPunctuation(selectedEvent.title)}</h2><p>{withoutEndingPunctuation(selectedEvent.story || selectedEvent.summary)}</p>
