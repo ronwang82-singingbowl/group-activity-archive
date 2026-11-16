@@ -22,6 +22,31 @@ const demoEvents = [
 
 function Arrow({ diagonal = false }) { return <span aria-hidden="true" className="arrow">{diagonal ? '↗' : '→'}</span>; }
 
+function youtubeEmbedUrl(value) {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:') return null;
+    const host = url.hostname.toLowerCase();
+    let id = null;
+    if (host === 'youtu.be') id = url.pathname.split('/')[1];
+    else if (['youtube.com', 'www.youtube.com', 'm.youtube.com'].includes(host)) {
+      const parts = url.pathname.split('/');
+      id = url.pathname === '/watch' ? url.searchParams.get('v') : (['embed', 'shorts', 'live'].includes(parts[1]) ? parts[2] : null);
+    }
+    return /^[a-zA-Z0-9_-]{11}$/.test(id || '') ? `https://www.youtube.com/embed/${id}` : null;
+  } catch { return null; }
+}
+
+const withoutEndingPunctuation = value => String(value || '').replace(/[。！？!?.,，、；;：:]+(?=\s*(?:\n|$))/g, '');
+
+function EventVideo({ url, title }) {
+  if (!url || !/^https:\/\//.test(url)) return null;
+  const embedUrl = youtubeEmbedUrl(url);
+  if (embedUrl) return <div className="event-video"><h3>活動影片</h3><div className="youtube-frame"><iframe src={embedUrl} title={`${title} 活動影片`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div></div>;
+  if (/\.mp4(?:[?#]|$)/i.test(url)) return <div className="event-video"><h3>活動影片</h3><video controls playsInline preload="metadata" src={url}>你的瀏覽器無法播放這段影片</video></div>;
+  return <p><a href={url} target="_blank" rel="noopener noreferrer">觀看活動影片 ↗</a></p>;
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -62,7 +87,7 @@ function App() {
       <div className="demo-banner">{isDemo ? '展示版本｜目前活動、日期與照片皆為示範內容' : '公開活動｜僅顯示已發布內容'}</div>
       <header className="site-header">
         <button className="brand" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); setMenuOpen(false); }} aria-label="回到首頁">
-          <span className="brand-mark">日</span><span className="brand-text"><strong>日子有光</strong><small>MEMORY ARCHIVE</small></span>
+          <span className="brand-mark">圓</span><span className="brand-text"><strong>圓滿</strong><small>MEMORY ARCHIVE</small></span>
         </button>
         <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="主選單">
           <button onClick={() => go('story')}>關於這裡</button><button onClick={() => go('memories')}>活動紀錄</button><button onClick={() => go('gallery')}>回憶片刻</button><button onClick={() => go('closing')}>一起收藏</button>
@@ -77,8 +102,8 @@ function App() {
           <div className="hero-shade"></div>
           <div className="hero-content">
             <p className="eyebrow light">THE DAYS WE SHARE · 2026</p>
-            <h1 id="hero-heading">那些一起走過的日子，<br /><em>都有光。</em></h1>
-            <p className="hero-sub">把相聚的溫度，收藏成可以再次翻閱的故事。<br />這裡記得每一場相遇，和每一個認真生活的我們。</p>
+            <h1 id="hero-heading">那些一起走過的日子<br /><em>都有光</em></h1>
+            <p className="hero-sub">把相聚的溫度，收藏成可以再次翻閱的故事<br />這裡記得每一場相遇，和每一個認真生活的我們</p>
             <button className="hero-button" onClick={() => go('memories')}>走進我們的故事 <span>↗</span></button>
           </div>
           <div className="hero-side">A COLLECTION OF OUR MOMENTS　／　VOL. 01</div>
@@ -87,17 +112,17 @@ function App() {
 
         <section className="intro section-wrap" id="story">
           <div className="intro-side"><span className="section-index">01 — THE MEANING</span><div className="sun-symbol">✳</div></div>
-          <div className="intro-main"><p className="eyebrow">A PLACE TO REMEMBER</p><h2>日子會往前，<br />故事可以<span className="accent-underline">留下來。</span></h2>
-            <p>有些快樂，藏在照片裡。<br />有些感動，要過了很久才慢慢明白。</p>
-            <p>我們把每次相聚的片刻收進這裡，讓那些一起笑過、走過、感受過的日子，不只留在記憶裡，也成為未來回望時的一份溫柔。</p>
-            <div className="handwritten">Remember the little things.</div>
+          <div className="intro-main"><p className="eyebrow">A PLACE TO REMEMBER</p><h2>日子會往前<br />故事可以<span className="accent-underline">留下來</span></h2>
+            <p>有些快樂，藏在照片裡<br />有些感動，要過了很久才慢慢明白</p>
+            <p>我們把每次相聚的片刻收進這裡，讓那些一起笑過、走過、感受過的日子，不只留在記憶裡，也成為未來回望時的一份溫柔</p>
+            <div className="handwritten">Remember the little things</div>
           </div>
           <div className="intro-stamp"><span>EVERY<br />MOMENT<br />MATTERS</span><span>✷</span></div>
         </section>
 
         <section className="memories" id="memories">
           <div className="section-wrap">
-            <div className="section-heading"><div><p className="eyebrow">02 — OUR JOURNAL</p><h2>最近的<span className="italic-heading">相聚故事</span></h2><p className="heading-sub">每一次相見，都是值得收藏的篇章。</p></div>
+            <div className="section-heading"><div><p className="eyebrow">02 — OUR JOURNAL</p><h2>最近的<span className="italic-heading">相聚故事</span></h2><p className="heading-sub">每一次相見，都是值得收藏的篇章</p></div>
               <div className="years" role="group" aria-label="年份篩選">{years.map(y => <button key={y} className={year === y ? 'active' : ''} onClick={() => setYear(y)}>{y === '全部' ? '所有年份' : y}</button>)}</div>
             </div>
             <div className="event-controls">
@@ -112,33 +137,33 @@ function App() {
                 <img loading="lazy" src={event.image?.trim() || defaultEventCover} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = defaultEventCover; }} alt={event.title + (isDemo ? '示範配圖' : '活動封面')} /><span className="photo-number">0{i+1}</span><span className="photo-more"><Arrow diagonal /></span>
               </button>
               <div className="event-meta"><span>{event.date}</span><span className="meta-dot">•</span><span>{event.tag}</span></div>
-              <button className="event-title" onClick={() => setSelectedEvent(event)}>{event.title}</button>
-              <p className="event-summary">{event.summary}</p>
+              <button className="event-title" onClick={() => setSelectedEvent(event)}>{withoutEndingPunctuation(event.title)}</button>
+              <p className="event-summary">{withoutEndingPunctuation(event.summary)}</p>
               <div className="event-footer"><span>{event.count}{isDemo ? ' · 示範內容' : ''}</span><button onClick={() => setSelectedEvent(event)}>閱讀故事 <Arrow /></button></div>
             </article>)}</div>
-            {filtered.length === 0 && <div className="no-events"><h3>還沒找到符合條件的活動</h3><p>可以試著調整關鍵字或清除篩選條件。</p><button onClick={() => {setSearch('');setCategory('全部');setYear('全部');}}>顯示所有活動</button></div>}
+            {filtered.length === 0 && <div className="no-events"><h3>還沒找到符合條件的活動</h3><p>可以試著調整關鍵字或清除篩選條件</p><button onClick={() => {setSearch('');setCategory('全部');setYear('全部');}}>顯示所有活動</button></div>}
             <div className="center-footnote">{isDemo ? '— 更多真實活動，將在正式上線後陸續收藏 —' : '— 謝謝你和我們一起收藏這些片刻 —'}</div>
           </div>
         </section>
 
-        <section className="quote-band"><div className="section-wrap quote-inner"><span>“</span><p>多年以後，讓我們仍能記得，<br />那一天的風，和彼此的笑容。</p><div className="quote-caption">FOR EVERY MEMORY WE MADE TOGETHER</div></div></section>
+        <section className="quote-band"><div className="section-wrap quote-inner"><span>“</span><p>多年以後，讓我們仍能記得<br />那一天的風，和彼此的笑容</p><div className="quote-caption">FOR EVERY MEMORY WE MADE TOGETHER</div></div></section>
 
         <section className="gallery section-wrap" id="gallery">
-          <div className="section-heading gallery-title"><div><p className="eyebrow">03 — LITTLE MOMENTS</p><h2>那些<span className="italic-heading">剛好的瞬間</span></h2><p className="heading-sub">不需要特別的理由，日常就很值得紀念。</p></div><div className="gallery-label">PHOTO DIARY<br />2026 COLLECTION</div></div>
+          <div className="section-heading gallery-title"><div><p className="eyebrow">03 — LITTLE MOMENTS</p><h2>那些<span className="italic-heading">剛好的瞬間</span></h2><p className="heading-sub">不需要特別的理由，日常就很值得紀念</p></div><div className="gallery-label">PHOTO DIARY<br />2026 COLLECTION</div></div>
           <div className="gallery-grid"><figure className="gallery-main"><img loading="lazy" src={photos.lake} alt="高山湖泊示範風景照片" /><figcaption>01 / 路上的風景</figcaption></figure><figure><img loading="lazy" src={photos.flowers} alt="山巒自然示範風景照片" /><figcaption>02 / 生活的留白</figcaption></figure><figure><img loading="lazy" src={photos.picnic} alt="咖啡示範照片" /><figcaption>03 / 一起喝杯咖啡</figcaption></figure></div>
-          <p className="photo-notice">※ 本頁照片為示意圖片，並非團體實際活動紀錄。</p>
+          <p className="photo-notice">※ 本頁照片為示意圖片，並非團體實際活動紀錄</p>
         </section>
 
-        <section className="closing" id="closing"><div className="closing-ornament">✳</div><p className="eyebrow">TO BE CONTINUED</p><h2>故事還在繼續，<br />下次也一起吧。</h2><p>每一個今天，都可能是未來最想念的那一天。</p><button onClick={() => go('memories')}>再翻翻我們的故事 <Arrow diagonal /></button><div className="closing-small">WITH LOVE, FROM ALL OF US.</div></section>
+        <section className="closing" id="closing"><div className="closing-ornament">✳</div><p className="eyebrow">TO BE CONTINUED</p><h2>故事還在繼續<br />下次也一起吧</h2><p>每一個今天，都可能是未來最想念的那一天</p><button onClick={() => go('memories')}>再翻翻我們的故事 <Arrow diagonal /></button><div className="closing-small">WITH LOVE, FROM ALL OF US</div></section>
       </main>
-      <footer><div className="footer-brand"><span className="brand-mark">日</span><div><strong>日子有光</strong><small>把每一段相聚，收藏成光。</small></div></div><div className="footer-right"><span>© 2026 MEMORY ARCHIVE</span><span>一個關於我們的故事收藏所</span></div></footer>
+      <footer><div className="footer-brand"><span className="brand-mark">圓</span><div><strong>圓滿</strong><small>把每一段相聚，收藏成光</small></div></div><div className="footer-right"><span>© 2026 MEMORY ARCHIVE</span><span>一個關於我們的故事收藏所</span></div></footer>
 
       {selectedEvent && <div className="modal-backdrop" onClick={() => setSelectedEvent(null)}><section className="event-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="關閉">✕</button><img src={selectedEvent.image?.trim() || defaultEventCover} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = defaultEventCover; }} alt={selectedEvent.title + (isDemo ? '示意圖片' : '活動封面')} /><div className="modal-content"><p className="eyebrow">{selectedEvent.date} · {selectedEvent.tag}</p><h2 id="modal-title">{selectedEvent.title}</h2><p>{selectedEvent.story || selectedEvent.summary}</p>
+        <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="關閉">✕</button><img src={selectedEvent.image?.trim() || defaultEventCover} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = defaultEventCover; }} alt={selectedEvent.title + (isDemo ? '示意圖片' : '活動封面')} /><div className="modal-content"><p className="eyebrow">{selectedEvent.date} · {selectedEvent.tag}</p><h2 id="modal-title">{withoutEndingPunctuation(selectedEvent.title)}</h2><p>{withoutEndingPunctuation(selectedEvent.story || selectedEvent.summary)}</p>
           {selectedEvent.location && <p className="event-location">地點｜{selectedEvent.location}</p>}
           {selectedEvent.photos?.length > 0 && <div className="modal-gallery">{selectedEvent.photos.map((url,i) => <img key={i} loading="lazy" src={url} alt={selectedEvent.title + '照片 ' + (i+1)} />)}</div>}
-          {selectedEvent.videoUrl && /^https:\/\//.test(selectedEvent.videoUrl) && (/\.mp4(?:[?#]|$)/i.test(selectedEvent.videoUrl) ? <div className="event-video"><h3>活動影片</h3><video controls playsInline preload="metadata" src={selectedEvent.videoUrl}>你的瀏覽器無法播放這段影片，請使用下方連結。</video><a href={selectedEvent.videoUrl} target="_blank" rel="noopener noreferrer">開啟影片 ↗</a></div> : <p><a href={selectedEvent.videoUrl} target="_blank" rel="noopener noreferrer">觀看活動影片 ↗</a></p>)}
-          {isDemo && <div className="modal-note">這是示範活動。正式活動的照片、故事與影片，將由管理員審核發布後顯示。</div>}<button onClick={() => setSelectedEvent(null)}>回到首頁 <Arrow /></button></div>
+          <EventVideo url={selectedEvent.videoUrl} title={selectedEvent.title} />
+          {isDemo && <div className="modal-note">這是示範活動，正式活動的照片、故事與影片將由管理員審核發布後顯示</div>}<button onClick={() => setSelectedEvent(null)}>回到首頁 <Arrow /></button></div>
       </section></div>}
     </>
   );
