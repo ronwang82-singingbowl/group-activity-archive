@@ -95,7 +95,7 @@ function App() {
           <BrandMark /><span className="brand-text"><strong>圓滿</strong><small>COMPLETE LIFE</small></span>
         </button>
         <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="主選單">
-          <button onClick={() => go('story')}>關於這裡</button><button onClick={() => go('memories')}>活動紀錄</button><button onClick={() => go('gallery')}>回憶片刻</button>
+          <button onClick={() => go('story')}>關於這裡</button><button onClick={() => go('memories')}>活動紀錄</button>
         </nav>
         
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? '關閉選單' : '開啟選單'}>{menuOpen ? '✕' : '☰'}</button>
@@ -112,7 +112,7 @@ function App() {
             <button className="hero-button" onClick={() => go('memories')}>走進我們的故事 <span>↗</span></button>
           </div>
           <div className="hero-side">A COLLECTION OF OUR MOMENTS　／　VOL. 01</div>
-          <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"></span><span>01 / 04</span></div>
+          <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"></span><span>01 / 03</span></div>
         </section>
 
         <section className="intro section-wrap" id="story">
@@ -153,11 +153,6 @@ function App() {
 
         <section className="quote-band"><div className="section-wrap quote-inner"><span>“</span><p>多年以後，讓我們仍能記得<br />那一天的風，和彼此的笑容</p><div className="quote-caption">FOR EVERY MEMORY WE MADE TOGETHER</div></div></section>
 
-        <section className="gallery section-wrap" id="gallery">
-          <div className="section-heading gallery-title"><div><p className="eyebrow">03 — LITTLE MOMENTS</p><h2>那些<span className="italic-heading">剛好的瞬間</span></h2><p className="heading-sub">不需要特別的理由，日常就很值得紀念</p></div><div className="gallery-label">PHOTO DIARY<br />2026 COLLECTION</div></div>
-          <div className="gallery-grid"><figure className="gallery-main"><img loading="lazy" src={photos.lake} alt="高山湖泊示範風景照片" /><figcaption>01 / 路上的風景</figcaption></figure><figure><img loading="lazy" src={photos.flowers} alt="山巒自然示範風景照片" /><figcaption>02 / 生活的留白</figcaption></figure><figure><img loading="lazy" src={photos.picnic} alt="咖啡示範照片" /><figcaption>03 / 一起喝杯咖啡</figcaption></figure></div>
-          <p className="photo-notice">※ 本頁照片為示意圖片，並非團體實際活動紀錄</p>
-        </section>
 
         <section className="closing" id="closing"><div className="closing-ornament">✳</div><p className="eyebrow">TO BE CONTINUED</p><h2>故事還在繼續<br />下次也一起吧</h2><p>每一個今天，都可能是未來最想念的那一天</p><button onClick={() => go('memories')}>再翻翻我們的故事 <Arrow diagonal /></button><div className="closing-small">WITH LOVE, FROM ALL OF US</div></section>
       </main>
