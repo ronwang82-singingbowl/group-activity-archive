@@ -95,9 +95,9 @@ function App() {
           <BrandMark /><span className="brand-text"><strong>圓滿</strong><small>COMPLETE LIFE</small></span>
         </button>
         <nav className={menuOpen ? 'nav open' : 'nav'} aria-label="主選單">
-          <button onClick={() => go('story')}>關於這裡</button><button onClick={() => go('memories')}>活動紀錄</button><button onClick={() => go('gallery')}>回憶片刻</button><button onClick={() => go('closing')}>一起收藏</button>
+          <button onClick={() => go('story')}>關於這裡</button><button onClick={() => go('memories')}>活動紀錄</button><button onClick={() => go('gallery')}>回憶片刻</button>
         </nav>
-        <button className="header-action" onClick={() => go('memories')}>探索回憶 <Arrow diagonal /></button>
+        
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? '關閉選單' : '開啟選單'}>{menuOpen ? '✕' : '☰'}</button>
       </header>
 
@@ -168,7 +168,7 @@ function App() {
           {selectedEvent.location && <p className="event-location">地點｜{selectedEvent.location}</p>}
           {selectedEvent.photos?.length > 0 && <div className="modal-gallery">{selectedEvent.photos.map((url,i) => <img key={i} loading="lazy" src={url} alt={selectedEvent.title + '照片 ' + (i+1)} />)}</div>}
           <EventVideo url={selectedEvent.videoUrl} title={selectedEvent.title} />
-          {isDemo && <div className="modal-note">這是示範活動，正式活動的照片、故事與影片將由管理員審核發布後顯示</div>}<button onClick={() => setSelectedEvent(null)}>回到首頁 <Arrow /></button></div>
+          {isDemo && <div className="modal-note">這是示範活動，正式活動的照片、故事與影片將由管理員審核發布後顯示</div>}<button onClick={() => setSelectedEvent(null)}>回到活動紀錄 <Arrow /></button></div>
       </section></div>}
     </>
   );
