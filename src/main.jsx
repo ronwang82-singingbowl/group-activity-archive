@@ -15,6 +15,11 @@ const photos = {
 };
 
 // All names, dates and event descriptions below are fictional demo content.
+const heroSlides = [
+  { type: 'image', src: photos.hero, alt: '湖畔山巒和安靜的自然風景' },
+  { type: 'video', src: `${import.meta.env.BASE_URL}hero-group-activity.mp4`, alt: '圓滿夥伴一起聚餐歡笑的活動影片' }
+];
+
 const demoEvents = [
   { id: 1, date: '2026.10.24', year: '2026', tag: '戶外日常', title: '在秋天，遇見慢下來的自己', summary: '走進山裡，讓風景替我們留下一段安靜的時間。', image: photos.forest, count: '24 張照片' },
   { id: 2, date: '2026.08.16', year: '2026', tag: '相聚時光', title: '午後的咖啡，剛好的我們', summary: '聊聊生活、交換近況，平凡的一天也值得好好記得。', image: photos.picnic, count: '18 張照片' },
@@ -61,6 +66,7 @@ function App() {
   const [events, setEvents] = useState(demoEvents);
   const [isDemo, setIsDemo] = useState(true);
   const [dataNotice, setDataNotice] = useState('');
+  const [heroSlide, setHeroSlide] = useState(0);
   useEffect(() => {
     let mounted = true;
     loadPublishedEvents().then(items => {
@@ -77,6 +83,11 @@ function App() {
     });
     return () => { mounted = false; };
   }, []);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setInterval(() => setHeroSlide(index => (index + 1) % heroSlides.length), 5000);
+    return () => window.clearInterval(timer);
+  }, []);
   const years = ['全部', ...new Set(events.map(e => e.year).filter(Boolean))].sort((a,b) => a === '全部' ? -1 : b === '全部' ? 1 : b.localeCompare(a));
   const categories = ['全部', ...new Set(events.map(e => e.tag).filter(Boolean))];
   const normalizedSearch = search.trim().toLocaleLowerCase();
@@ -89,7 +100,6 @@ function App() {
   const go = (id) => { setMenuOpen(false); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
   return (
     <>
-      <div className="demo-banner">{isDemo ? '展示版本｜目前活動、日期與照片皆為示範內容' : '公開活動｜僅顯示已發布內容'}</div>
       <header className="site-header">
         <button className="brand" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); setMenuOpen(false); }} aria-label="回到首頁">
           <BrandMark /><span className="brand-text"><strong>圓滿</strong><small>COMPLETE LIFE</small></span>
@@ -103,7 +113,7 @@ function App() {
 
       <main>
         <section className="hero" aria-labelledby="hero-heading">
-          <img className="hero-img" src={photos.hero} alt="湖畔山巒和安靜的自然風景" />
+          {heroSlides[heroSlide].type === 'video' ? <video key={heroSlides[heroSlide].src} className="hero-img hero-media-enter" src={heroSlides[heroSlide].src} aria-label={heroSlides[heroSlide].alt} autoPlay muted playsInline preload="auto" /> : <img key={heroSlides[heroSlide].src} className="hero-img hero-media-enter" src={heroSlides[heroSlide].src} alt={heroSlides[heroSlide].alt} />}
           <div className="hero-shade"></div>
           <div className="hero-content">
             <p className="eyebrow light">THE DAYS WE SHARE · 2026</p>
@@ -112,7 +122,7 @@ function App() {
             <button className="hero-button" onClick={() => go('memories')}>走進我們的故事 <span>↗</span></button>
           </div>
           <div className="hero-side">A COLLECTION OF OUR MOMENTS　／　VOL. 01</div>
-          <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"></span><span>01 / 03</span></div>
+          <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"></span><span>0{heroSlide + 1} / 02</span></div>
         </section>
 
         <section className="intro section-wrap" id="story">
