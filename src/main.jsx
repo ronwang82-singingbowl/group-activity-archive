@@ -17,7 +17,16 @@ const photos = {
 // All names, dates and event descriptions below are fictional demo content.
 const heroSlides = [
   { type: 'image', src: photos.hero, alt: '湖畔山巒和安靜的自然風景' },
-  { type: 'video', src: `${import.meta.env.BASE_URL}hero-group-activity.mp4`, alt: '圓滿夥伴一起聚餐歡笑的活動影片' }
+  { type: 'video', src: `${import.meta.env.BASE_URL}hero-group-activity.mp4`, alt: '圓滿夥伴一起聚餐歡笑的活動影片' },
+  { type: 'video', src: `${import.meta.env.BASE_URL}community-reel-2026-11-18-02.mp4`, alt: '圓滿夥伴乘船出遊的活動影片' },
+  { type: 'video', src: `${import.meta.env.BASE_URL}community-reel-2026-11-18-03.mp4`, alt: '圓滿夥伴一起活動的影片' },
+  { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-01.jpg`, alt: '圓滿夥伴相聚合照' },
+  { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-02.jpg`, alt: '圓滿夥伴乘船出遊合照' },
+  { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-03.jpg`, alt: '圓滿夥伴攀岩活動合照' },
+  { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-04.jpg`, alt: '圓滿夥伴慶祝活動合照' },
+  { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-05.jpg`, alt: '圓滿夥伴一起完成落葉拼圖' },
+  { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-06.jpg`, alt: '圓滿夥伴在公園野餐合照' },
+  { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-07.jpg`, alt: '圓滿夥伴在音樂會合照' }
 ];
 
 const demoEvents = [
@@ -67,6 +76,7 @@ function App() {
   const [isDemo, setIsDemo] = useState(true);
   const [dataNotice, setDataNotice] = useState('');
   const [heroSlide, setHeroSlide] = useState(0);
+  const [previousHeroSlide, setPreviousHeroSlide] = useState(null);
   useEffect(() => {
     let mounted = true;
     loadPublishedEvents().then(items => {
@@ -85,9 +95,17 @@ function App() {
   }, []);
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const timer = window.setInterval(() => setHeroSlide(index => (index + 1) % heroSlides.length), 5000);
-    return () => window.clearInterval(timer);
-  }, []);
+    const timer = window.setTimeout(() => {
+      setPreviousHeroSlide(heroSlide);
+      setHeroSlide((heroSlide + 1) % heroSlides.length);
+    }, 5000);
+    return () => window.clearTimeout(timer);
+  }, [heroSlide]);
+  useEffect(() => {
+    if (previousHeroSlide === null) return;
+    const timer = window.setTimeout(() => setPreviousHeroSlide(null), 850);
+    return () => window.clearTimeout(timer);
+  }, [previousHeroSlide]);
   const years = ['全部', ...new Set(events.map(e => e.year).filter(Boolean))].sort((a,b) => a === '全部' ? -1 : b === '全部' ? 1 : b.localeCompare(a));
   const categories = ['全部', ...new Set(events.map(e => e.tag).filter(Boolean))];
   const normalizedSearch = search.trim().toLocaleLowerCase();
@@ -113,6 +131,7 @@ function App() {
 
       <main>
         <section className="hero" aria-labelledby="hero-heading">
+          {previousHeroSlide !== null && (heroSlides[previousHeroSlide].type === 'video' ? <video key={`previous-${heroSlides[previousHeroSlide].src}`} className="hero-img hero-media-leave" src={heroSlides[previousHeroSlide].src} aria-hidden="true" autoPlay muted playsInline preload="auto" /> : <img key={`previous-${heroSlides[previousHeroSlide].src}`} className="hero-img hero-media-leave" src={heroSlides[previousHeroSlide].src} alt="" />)}
           {heroSlides[heroSlide].type === 'video' ? <video key={heroSlides[heroSlide].src} className="hero-img hero-media-enter" src={heroSlides[heroSlide].src} aria-label={heroSlides[heroSlide].alt} autoPlay muted playsInline preload="auto" /> : <img key={heroSlides[heroSlide].src} className="hero-img hero-media-enter" src={heroSlides[heroSlide].src} alt={heroSlides[heroSlide].alt} />}
           <div className="hero-shade"></div>
           <div className="hero-content">
@@ -122,7 +141,7 @@ function App() {
             <button className="hero-button" onClick={() => go('memories')}>走進我們的故事 <span>↗</span></button>
           </div>
           <div className="hero-side">A COLLECTION OF OUR MOMENTS　／　VOL. 01</div>
-          <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"></span><span>0{heroSlide + 1} / 02</span></div>
+          <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"></span><span>{String(heroSlide + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')}</span></div>
         </section>
 
         <section className="intro section-wrap" id="story">
