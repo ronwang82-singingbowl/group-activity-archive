@@ -18,8 +18,6 @@ const photos = {
 const heroSlides = [
   { type: 'image', src: photos.hero, alt: '湖畔山巒和安靜的自然風景' },
   { type: 'video', src: `${import.meta.env.BASE_URL}hero-group-activity.mp4`, alt: '圓滿夥伴一起聚餐歡笑的活動影片' },
-  { type: 'video', src: `${import.meta.env.BASE_URL}community-reel-2026-11-18-02.mp4`, alt: '圓滿夥伴乘船出遊的活動影片' },
-  { type: 'video', src: `${import.meta.env.BASE_URL}community-reel-2026-11-18-03.mp4`, alt: '圓滿夥伴一起活動的影片' },
   { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-01.jpg`, alt: '圓滿夥伴相聚合照' },
   { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-02.jpg`, alt: '圓滿夥伴乘船出遊合照' },
   { type: 'image', src: `${import.meta.env.BASE_URL}community-memory-03.jpg`, alt: '圓滿夥伴攀岩活動合照' },
