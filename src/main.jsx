@@ -92,18 +92,23 @@ function App() {
     return () => { mounted = false; };
   }, []);
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || heroSlides[heroSlide].type === 'video') return;
     const timer = window.setTimeout(() => {
-      setPreviousHeroSlide(heroSlide);
+      setPreviousHeroSlide({ index: heroSlide, currentTime: null });
       setHeroSlide((heroSlide + 1) % heroSlides.length);
     }, 5000);
     return () => window.clearTimeout(timer);
   }, [heroSlide]);
   useEffect(() => {
     if (previousHeroSlide === null) return;
-    const timer = window.setTimeout(() => setPreviousHeroSlide(null), 850);
+    const timer = window.setTimeout(() => setPreviousHeroSlide(null), 1500);
     return () => window.clearTimeout(timer);
   }, [previousHeroSlide]);
+  const advanceHeroAfterVideo = video => {
+    const frameTime = Number.isFinite(video?.duration) ? Math.max(0, video.duration - 0.05) : null;
+    setPreviousHeroSlide({ index: heroSlide, currentTime: frameTime });
+    setHeroSlide((heroSlide + 1) % heroSlides.length);
+  };
   const years = ['全部', ...new Set(events.map(e => e.year).filter(Boolean))].sort((a,b) => a === '全部' ? -1 : b === '全部' ? 1 : b.localeCompare(a));
   const categories = ['全部', ...new Set(events.map(e => e.tag).filter(Boolean))];
   const normalizedSearch = search.trim().toLocaleLowerCase();
@@ -129,8 +134,8 @@ function App() {
 
       <main>
         <section className="hero" aria-labelledby="hero-heading">
-          {previousHeroSlide !== null && (heroSlides[previousHeroSlide].type === 'video' ? <video key={`previous-${heroSlides[previousHeroSlide].src}`} className="hero-img hero-media-leave" src={heroSlides[previousHeroSlide].src} aria-hidden="true" autoPlay muted playsInline preload="auto" /> : <img key={`previous-${heroSlides[previousHeroSlide].src}`} className="hero-img hero-media-leave" src={heroSlides[previousHeroSlide].src} alt="" />)}
-          {heroSlides[heroSlide].type === 'video' ? <video key={heroSlides[heroSlide].src} className="hero-img hero-media-enter" src={heroSlides[heroSlide].src} aria-label={heroSlides[heroSlide].alt} autoPlay muted playsInline preload="auto" /> : <img key={heroSlides[heroSlide].src} className="hero-img hero-media-enter" src={heroSlides[heroSlide].src} alt={heroSlides[heroSlide].alt} />}
+          {previousHeroSlide !== null && (heroSlides[previousHeroSlide.index].type === 'video' ? <video key={`previous-${heroSlides[previousHeroSlide.index].src}`} className="hero-img hero-media-leave" src={heroSlides[previousHeroSlide.index].src} aria-hidden="true" muted playsInline preload="auto" onLoadedMetadata={event => { if (previousHeroSlide.currentTime !== null) event.currentTarget.currentTime = previousHeroSlide.currentTime; }} /> : <img key={`previous-${heroSlides[previousHeroSlide.index].src}`} className="hero-img hero-media-leave" src={heroSlides[previousHeroSlide.index].src} alt="" />)}
+          {heroSlides[heroSlide].type === 'video' ? <video key={heroSlides[heroSlide].src} className="hero-img hero-media-enter" src={heroSlides[heroSlide].src} aria-label={heroSlides[heroSlide].alt} autoPlay muted playsInline preload="auto" onEnded={event => advanceHeroAfterVideo(event.currentTarget)} onError={event => advanceHeroAfterVideo(event.currentTarget)} /> : <img key={heroSlides[heroSlide].src} className="hero-img hero-media-enter" src={heroSlides[heroSlide].src} alt={heroSlides[heroSlide].alt} />}
           <div className="hero-shade"></div>
           <div className="hero-content">
             <p className="eyebrow light">THE DAYS WE SHARE · 2026</p>
