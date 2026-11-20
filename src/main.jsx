@@ -141,10 +141,9 @@ function App() {
             <p className="eyebrow light">THE DAYS WE SHARE · 2026</p>
             <h1 id="hero-heading">那些一起走過的日子<br /><em>都有光</em></h1>
             <p className="hero-sub">把相聚的溫度，收藏成可以再次翻閱的故事<br />這裡記得每一場相遇，和每一個認真生活的我們</p>
-            <button className="hero-button" onClick={() => go('memories')}>走進我們的故事 <span>↗</span></button>
           </div>
           <div className="hero-side">A COLLECTION OF OUR MOMENTS　／　VOL. 01</div>
-          <div className="hero-bottom"><span>SCROLL TO EXPLORE</span><span className="scroll-line"></span><span>{String(heroSlide + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')}</span></div>
+          <span className="hero-pagination">{String(heroSlide + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')}</span>
         </section>
 
         <section className="intro section-wrap" id="story">
