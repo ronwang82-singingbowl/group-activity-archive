@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">活動預設封面</title>
+  <desc id="desc">奶油白底色上，日光從山巒後升起，點綴柔和的鼠尾草綠。</desc>
+  <rect width="1200" height="900" fill="#eceee5"/>
+  <circle cx="846" cy="274" r="112" fill="#d7b986" opacity=".78"/>
+  <path d="M0 534c154-86 251-70 386 1 127 67 226 61 342-12 135-84 292-83 472 4v373H0Z" fill="#bdc9b8"/>
+  <path d="M0 637c168-76 278-49 418 17 137 64 245 64 378-2 140-70 278-76 404-10v258H0Z" fill="#8fa48f"/>
+  <path d="M0 731c172-47 318-40 467 19 144 57 265 51 404-7 121-50 235-57 329-30v190H0Z" fill="#718975"/>
+  <path d="M0 817c189-24 331-11 480 35 133 41 260 40 394 2 121-35 225-40 326-24v70H0Z" fill="#586f5e" opacity=".86"/>
+  <g fill="none" stroke="#f7f6f0" stroke-width="3" opacity=".8">
+    <path d="M77 176h94M124 129v94M101 153l47 47m0-47-47 47"/>
+    <path d="M1039 482h59m-29-29v59m-21-50 42 42m0-42-42 42"/>
+  </g>
+  <path d="M0 0h1200v900H0z" fill="none" stroke="#f7f6f0" stroke-width="30" opacity=".58"/>
+</svg>
